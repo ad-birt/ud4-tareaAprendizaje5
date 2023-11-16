@@ -2,10 +2,13 @@ package entidades;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.Formula;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -15,6 +18,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -48,6 +55,19 @@ public class Student {
 	
 	@Formula ("floor(datediff(curdate(), birthdate)/365)")
 	private int age;
+	
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn (name="tuition_id")
+	private Tuition tuition;  
+	
+	@ManyToOne
+	@JoinColumn (name = "university_id")
+	private University university;
+	
+	@ManyToMany (cascade= {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(name="student_course", joinColumns=@JoinColumn(name="student_id"), 
+			inverseJoinColumns=@JoinColumn(name="course_id"))
+	private Set<Course> courses = new HashSet<>();
 	
 	public LocalDate getBirthdate() {
 		return birthdate;
@@ -121,6 +141,30 @@ public class Student {
 
 	public void setPhones(List<String> phones) {
 		this.phones = phones;
+	}
+
+	public Tuition getTuition() {
+		return tuition;
+	}
+
+	public void setTuition(Tuition tuition) {
+		this.tuition = tuition;
+	}
+
+	public University getUniversity() {
+		return university;
+	}
+
+	public void setUniversity(University university) {
+		this.university = university;
+	}
+
+	public Set<Course> getCourses() {
+		return courses;
+	}
+
+	public void setCourses(Set<Course> courses) {
+		this.courses = courses;
 	}
 
 	@Override

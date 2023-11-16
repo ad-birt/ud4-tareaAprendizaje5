@@ -7,12 +7,16 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
+import entidades.Course;
 import entidades.Student;
+import entidades.Tuition;
+import entidades.University;
 
-public class Ud4TareaAprendizaje3cEjercicio4 {
+public class Ud4TareaAprendizaje4cEjercicio4 {
 
 	/**
-	 * 4. Borra un Student y sus teléfonos
+	 * 4. ManyToMany bidireccional entre entidades Student y Course
+	 * Borra una Student pero no el curso
 	 */
 	public static void main(String[] args) {
 
@@ -23,6 +27,9 @@ public class Ud4TareaAprendizaje3cEjercicio4 {
 
 		Metadata metadata = new MetadataSources( standardRegistry )
 			    .addAnnotatedClass( Student.class )
+			    .addAnnotatedClass( Tuition.class )
+			    .addAnnotatedClass( University.class )
+			    .addAnnotatedClass( Course.class )
 			    .getMetadataBuilder()
 			    .build();
 
@@ -32,17 +39,16 @@ public class Ud4TareaAprendizaje3cEjercicio4 {
 		Session session = sessionFactory.openSession();
 		
 		try {			
-			// crea un objeto Student
-			System.out.println("Borrando un objeto Student y sus teléfonos");
+			// Borra un objeto Student
+			System.out.println("Borrando un objeto Student ");
 			
-			int student_id = 8;
+			int student_id = 13;
 			
-			Student tempStudent = session.get(Student.class, student_id);
-			
+			Student tempStudent= session.get(Student.class, student_id);
 			// comienza la transacción
 			session.beginTransaction();
 		
-			
+			// borra el objecto Student pero sin CascadeType.REMOVE no elimina el curso
 			session.remove(tempStudent);
 			
 			// hace commit de la transaccion
@@ -51,7 +57,7 @@ public class Ud4TareaAprendizaje3cEjercicio4 {
 			System.out.println("Hecho!");
 		}
 		catch ( Exception e ) {
-			// rollback ante alguna excepción
+			// rollback ante alguna excepci n
 			System.out.println("Realizando Rollback");
 			session.getTransaction().rollback();
 			e.printStackTrace();
